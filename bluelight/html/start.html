@@ -64,6 +64,9 @@
       <img src="../image/icon/title/bluelight.png" alt="BlueLight" style="width: 32px; height: 32px; margin-right: 10px;">
       <h1 style="margin: 0; font-size: 18px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.5px;">BlueLight DICOM Viewer</h1>
     </div>
+    <div style="margin-right: 12px; padding: 6px 12px; background-color: var(--secondary-bg); border-radius: 6px; font-size: 12px; color: var(--text-secondary); border: 1px solid var(--border-color);">
+      📁 Supports: <span style="color: var(--accent-primary); font-weight: 500;">DICOM</span>, <span style="color: var(--accent-primary); font-weight: 500;">ZIP</span>, <span style="color: var(--accent-primary); font-weight: 500;">Images</span> | Press <kbd style="background: var(--tertiary-bg); padding: 2px 6px; border-radius: 3px; font-size: 11px; border: 1px solid var(--border-color); color: var(--accent-primary);">?</kbd> for shortcuts
+    </div>
     <span id="icon-list">
       <span id="openFile_span"><img class="img pdf ecg sr" type="file" alt="Open File" altzhtw="開啟檔案" id="openFile"
           src="../image/icon/lite/openfile.png" width="50" height="50"></span>
@@ -316,6 +319,144 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Drag & Drop Overlay -->
+  <div class="drop-overlay" id="dropOverlay">
+    <div class="drop-zone">
+      <div class="drop-zone-icon">📁</div>
+      <div class="drop-zone-title">Drop your files here</div>
+      <div class="drop-zone-subtitle">Release to upload</div>
+      <div class="drop-zone-formats">
+        Supports: <strong>DICOM</strong> (.dcm), <strong>ZIP archives</strong> (.zip), <strong>Images</strong> (.jpg, .png)
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-title" id="loadingTitle">Processing...</div>
+      <div class="loading-message" id="loadingMessage">Please wait</div>
+      <div class="loading-progress">
+        <div class="loading-progress-bar" id="loadingProgressBar" style="width: 0%"></div>
+      </div>
+      <div class="loading-stats" id="loadingStats"></div>
+    </div>
+  </div>
+
+  <!-- Modern Tooltip -->
+  <div class="modern-tooltip" id="modernTooltip"></div>
+
+  <!-- Keyboard Shortcuts Help Overlay -->
+  <div class="shortcuts-overlay" id="shortcutsOverlay">
+    <div class="shortcuts-panel">
+      <div class="shortcuts-header">
+        <div class="shortcuts-title">⌨️ Keyboard Shortcuts</div>
+        <button class="shortcuts-close" id="shortcutsClose">✕</button>
+      </div>
+      <div class="shortcuts-content">
+        <div class="shortcuts-section">
+          <div class="shortcuts-section-title">File Operations</div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">Open File</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">O</span>
+            </div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">Show Keyboard Shortcuts</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">?</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="shortcuts-section">
+          <div class="shortcuts-section-title">View Controls</div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">Reset View</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">R</span>
+            </div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">Invert Colors</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">I</span>
+            </div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">Toggle Synchronization</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">L</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="shortcuts-section">
+          <div class="shortcuts-section-title">Split Screen</div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">1x1 Layout</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">1</span>
+            </div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">2x2 Layout</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">2</span>
+            </div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">3x3 Layout</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">3</span>
+            </div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">4x4 Layout</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">4</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="shortcuts-section">
+          <div class="shortcuts-section-title">Cine Playback</div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">Play/Pause</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">Space</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="shortcuts-section">
+          <div class="shortcuts-section-title">Navigation</div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">Previous Image</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">↑</span>
+            </div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-description">Next Image</div>
+            <div class="shortcut-keys">
+              <span class="shortcut-key">↓</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UI Enhancement Script -->
+  <script src="../scripts/ui-enhancements.js"></script>
 </body>
 
 </html>

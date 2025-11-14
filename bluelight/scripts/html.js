@@ -1,22 +1,39 @@
 var BorderList_Icon = ["MouseOperation", "WindowRevision", "MeasureRuler", "MouseRotate", "playvideo", "zoom", "b_Scroll", "AngleRuler", "openMeasureImg"];
 
-// Function to handle zip file extraction and DICOM loading
+// Function to handle zip file extraction and DICOM loading with UI feedback
 async function handleZipFile(file) {
+  let loadedCount = 0;
+  let failedCount = 0;
+  let totalFiles = 0;
+
   try {
+    // Show loading overlay
+    if (window.LoadingManager) {
+      LoadingManager.show('Extracting ZIP Archive', `Processing ${file.name}...`);
+    }
+
     const zip = new JSZip();
     const zipContents = await zip.loadAsync(file);
 
     // Counter for tracking all files in zip
-    let totalFiles = 0;
     zipContents.forEach(() => totalFiles++);
 
     console.log(`Found ${totalFiles} files in zip archive`);
 
+    if (window.LoadingManager) {
+      LoadingManager.updateMessage(`Found ${totalFiles} files. Loading DICOM files...`);
+    }
+
     // Process each file in the zip
     const filePromises = [];
+    let processedCount = 0;
+
     zipContents.forEach((relativePath, zipEntry) => {
-      // Skip directories and non-DICOM files (allow .dcm and files without extension)
-      if (zipEntry.dir) return;
+      // Skip directories
+      if (zipEntry.dir) {
+        processedCount++;
+        return;
+      }
 
       const filePromise = zipEntry.async("arraybuffer").then((arrayBuffer) => {
         // Try to load as DICOM regardless of extension
@@ -39,16 +56,34 @@ async function handleZipFile(file) {
               SeriesInstanceUID: Sop.Image.SeriesInstanceUID,
               Index: Sop.Image.NumberOfFrames | Sop.Image.InstanceNumber
             });
-            console.log(`Loaded DICOM file: ${relativePath}`);
+
+            loadedCount++;
+            console.log(`✓ Loaded DICOM file: ${relativePath}`);
+          } else {
+            failedCount++;
           }
         } catch (error) {
-          console.warn(`Could not load file as DICOM: ${relativePath}`, error);
+          failedCount++;
+          console.warn(`✗ Could not load file as DICOM: ${relativePath}`);
+        }
+
+        // Update progress
+        processedCount++;
+        const progress = (processedCount / totalFiles) * 100;
+        if (window.LoadingManager) {
+          LoadingManager.updateProgress(
+            progress,
+            `Loaded ${loadedCount} of ${totalFiles} files${failedCount > 0 ? ` (${failedCount} skipped)` : ''}`
+          );
         }
 
         ImageManager.NumOfPreLoadSops -= 1;
         if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
       }).catch((error) => {
+        failedCount++;
+        processedCount++;
         console.error(`Error processing file ${relativePath}:`, error);
+
         ImageManager.NumOfPreLoadSops -= 1;
         if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
       });
@@ -57,11 +92,53 @@ async function handleZipFile(file) {
     });
 
     await Promise.all(filePromises);
-    console.log('Zip file processing complete');
+
+    // Hide loading overlay
+    if (window.LoadingManager) {
+      LoadingManager.hide();
+    }
+
+    // Show completion toast
+    if (window.ToastManager) {
+      if (loadedCount > 0) {
+        ToastManager.success(
+          `Successfully loaded ${loadedCount} DICOM file${loadedCount !== 1 ? 's' : ''} from ${file.name}`,
+          'ZIP Archive Loaded'
+        );
+
+        if (failedCount > 0) {
+          ToastManager.warning(
+            `${failedCount} file${failedCount !== 1 ? 's were' : ' was'} skipped (not valid DICOM)`,
+            'Some Files Skipped'
+          );
+        }
+      } else {
+        ToastManager.error(
+          'No valid DICOM files found in the archive',
+          'ZIP Loading Failed'
+        );
+      }
+    }
+
+    console.log(`✅ Zip file processing complete: ${loadedCount} loaded, ${failedCount} failed`);
 
   } catch (error) {
     console.error('Error processing zip file:', error);
-    alert('Error processing zip file: ' + error.message);
+
+    // Hide loading overlay
+    if (window.LoadingManager) {
+      LoadingManager.hide();
+    }
+
+    // Show error toast
+    if (window.ToastManager) {
+      ToastManager.error(
+        error.message || 'Failed to extract or process ZIP archive',
+        'ZIP Processing Error'
+      );
+    } else {
+      alert('Error processing zip file: ' + error.message);
+    }
   }
 }
 
