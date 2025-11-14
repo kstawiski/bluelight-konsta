@@ -1,5 +1,168 @@
 var BorderList_Icon = ["MouseOperation", "WindowRevision", "MeasureRuler", "MouseRotate", "playvideo", "zoom", "b_Scroll", "AngleRuler", "openMeasureImg"];
 
+/**
+ * Handles ZIP file extraction and DICOM loading with UI feedback
+ *
+ * @param {File} file - The ZIP file to process
+ * @returns {Promise<void>} Resolves when all files have been processed
+ * @throws {Error} If ZIP extraction fails or invalid format
+ *
+ * @description
+ * Extracts all files from a ZIP archive and attempts to load each as a DICOM file.
+ * Provides real-time progress updates through LoadingManager and completion
+ * notifications through ToastManager. Non-DICOM files are skipped with warnings.
+ *
+ * Side effects:
+ * - Updates ImageManager.NumOfPreLoadSops counter
+ * - Creates blob URLs (need manual cleanup)
+ * - Shows/hides LoadingManager overlay
+ * - Displays ToastManager notifications
+ */
+async function handleZipFile(file) {
+  let loadedCount = 0;
+  let failedCount = 0;
+  let totalFiles = 0;
+
+  try {
+    // Show loading overlay
+    if (window.LoadingManager) {
+      LoadingManager.show('Extracting ZIP Archive', `Processing ${file.name}...`);
+    }
+
+    const zip = new JSZip();
+    const zipContents = await zip.loadAsync(file);
+
+    // Counter for tracking all files in zip (excluding directories)
+    zipContents.forEach((relativePath, zipEntry) => {
+      if (!zipEntry.dir) {
+        totalFiles++;
+      }
+    });
+
+    console.log(`Found ${totalFiles} files in zip archive`);
+
+    if (window.LoadingManager) {
+      LoadingManager.updateMessage(`Found ${totalFiles} files. Loading DICOM files...`);
+    }
+
+    // Process each file in the zip
+    const filePromises = [];
+    let processedCount = 0;
+
+    zipContents.forEach((relativePath, zipEntry) => {
+      // Skip directories
+      if (zipEntry.dir) {
+        return;
+      }
+
+      ImageManager.NumOfPreLoadSops += 1;
+
+      const filePromise = zipEntry.async("arraybuffer").then((arrayBuffer) => {
+        // Try to load as DICOM regardless of extension
+
+        try {
+          const Sop = loadDicomDataSet(arrayBuffer);
+          if (Sop) {
+            // Create a blob URL for the file
+            const blob = new Blob([arrayBuffer]);
+            const url = URL.createObjectURL(blob);
+            Sop.Image.url = url;
+            Sop.Image.fileName = relativePath;
+
+            setAllSeriesCount();
+            ImageManager.preLoadSops.push({
+              dataSet: Sop.dataSet,
+              image: Sop.Image,
+              Sop: Sop,
+              SeriesInstanceUID: Sop.Image.SeriesInstanceUID,
+              Index: Sop.Image.NumberOfFrames || Sop.Image.InstanceNumber
+            });
+
+            loadedCount++;
+            console.log(`✓ Loaded DICOM file: ${relativePath}`);
+          } else {
+            failedCount++;
+          }
+        } catch (error) {
+          failedCount++;
+          console.warn(`✗ Could not load file as DICOM: ${relativePath}`);
+        }
+
+      }).catch((error) => {
+        failedCount++;
+        console.error(`Error processing file ${relativePath}:`, error);
+      }).finally(() => {
+        processedCount++;
+        if (window.LoadingManager) {
+          if (totalFiles > 0) {
+            const progress = (processedCount / totalFiles) * 100;
+            LoadingManager.updateProgress(
+              progress,
+              `Loaded ${loadedCount} of ${totalFiles} files${failedCount > 0 ? ` (${failedCount} skipped)` : ''}`
+            );
+          } else {
+            LoadingManager.updateProgress(0, 'No files detected in archive');
+          }
+        }
+
+        ImageManager.NumOfPreLoadSops -= 1;
+        if (ImageManager.NumOfPreLoadSops === 0) ImageManager.loadPreLoadSops();
+      });
+
+      filePromises.push(filePromise);
+    });
+
+    await Promise.all(filePromises);
+
+    // Hide loading overlay with brief delay for smoother completion
+    if (window.LoadingManager) {
+      setTimeout(() => LoadingManager.hide(), 500);
+    }
+
+    // Show completion toast
+    if (window.ToastManager) {
+      if (loadedCount > 0) {
+        ToastManager.success(
+          `Successfully loaded ${loadedCount} DICOM file${loadedCount !== 1 ? 's' : ''} from ${file.name}`,
+          'ZIP Archive Loaded'
+        );
+
+        if (failedCount > 0) {
+          ToastManager.warning(
+            `${failedCount} file${failedCount !== 1 ? 's were' : ' was'} skipped (not valid DICOM)`,
+            'Some Files Skipped'
+          );
+        }
+      } else {
+        ToastManager.error(
+          'No valid DICOM files found in the archive',
+          'ZIP Loading Failed'
+        );
+      }
+    }
+
+    console.log(`✅ Zip file processing complete: ${loadedCount} loaded, ${failedCount} failed`);
+
+  } catch (error) {
+    console.error('Error processing zip file:', error);
+
+    // Hide loading overlay
+    if (window.LoadingManager) {
+      LoadingManager.hide();
+    }
+
+    // Show error toast
+    if (window.ToastManager) {
+      ToastManager.error(
+        error.message || 'Failed to extract or process ZIP archive',
+        'ZIP Processing Error'
+      );
+    } else {
+      alert('Error processing zip file: ' + error.message);
+    }
+  }
+}
+
 function html_onload() {
   document.body.style.overscrollBehavior = "none";
 
@@ -8,13 +171,17 @@ function html_onload() {
     var fileElem = document.createElement("input");
     fileElem.setAttribute("type", "file");
     fileElem.setAttribute("multiple", "multiple");
-    fileElem.onchange = function () {
+    fileElem.onchange = async function () {
       for (var k = 0; k < this.files.length; k++) {
 
         function basename(path) { return path.split('.').reverse()[0]; }
 
         var fileExtension = ("" + basename(this.files[k].name)).toLowerCase();
-        if (fileExtension == "mht") wadorsLoader(URL.createObjectURL(this.files[k]));
+        if (fileExtension == "zip") {
+          // Handle zip file
+          await handleZipFile(this.files[k]);
+        }
+        else if (fileExtension == "mht") wadorsLoader(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "jpg") loadPicture(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "jpeg") loadPicture(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "png") loadPicture(URL.createObjectURL(this.files[k]));
@@ -74,14 +241,18 @@ function html_onload() {
       }
     }
     function addFile(item) {
-      item.file(function (file) {
+      item.file(async function (file) {
         var url = URL.createObjectURL(file);
 
         function basename(path) {
           return path.split('.').reverse()[0];
         }
         var fileExtension = ("" + basename(file.name)).toLowerCase();
-        if (fileExtension == "mht") wadorsLoader(url);
+        if (fileExtension == "zip") {
+          // Handle zip file
+          await handleZipFile(file);
+        }
+        else if (fileExtension == "mht") wadorsLoader(url);
         else if (fileExtension == "jpg") loadPicture(url);
         else if (fileExtension == "jpeg") loadPicture(url);
         else if (fileExtension == "png") loadPicture(url);
