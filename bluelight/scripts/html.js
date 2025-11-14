@@ -1,6 +1,23 @@
 var BorderList_Icon = ["MouseOperation", "WindowRevision", "MeasureRuler", "MouseRotate", "playvideo", "zoom", "b_Scroll", "AngleRuler", "openMeasureImg"];
 
-// Function to handle zip file extraction and DICOM loading with UI feedback
+/**
+ * Handles ZIP file extraction and DICOM loading with UI feedback
+ *
+ * @param {File} file - The ZIP file to process
+ * @returns {Promise<void>} Resolves when all files have been processed
+ * @throws {Error} If ZIP extraction fails or invalid format
+ *
+ * @description
+ * Extracts all files from a ZIP archive and attempts to load each as a DICOM file.
+ * Provides real-time progress updates through LoadingManager and completion
+ * notifications through ToastManager. Non-DICOM files are skipped with warnings.
+ *
+ * Side effects:
+ * - Updates ImageManager.NumOfPreLoadSops counter
+ * - Creates blob URLs (need manual cleanup)
+ * - Shows/hides LoadingManager overlay
+ * - Displays ToastManager notifications
+ */
 async function handleZipFile(file) {
   let loadedCount = 0;
   let failedCount = 0;
@@ -44,7 +61,7 @@ async function handleZipFile(file) {
         // Try to load as DICOM regardless of extension
 
         try {
-          var Sop = loadDicomDataSet(arrayBuffer);
+          const Sop = loadDicomDataSet(arrayBuffer);
           if (Sop) {
             // Create a blob URL for the file
             const blob = new Blob([arrayBuffer]);
@@ -89,7 +106,7 @@ async function handleZipFile(file) {
         }
 
         ImageManager.NumOfPreLoadSops -= 1;
-        if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
+        if (ImageManager.NumOfPreLoadSops === 0) ImageManager.loadPreLoadSops();
       });
 
       filePromises.push(filePromise);
@@ -97,9 +114,9 @@ async function handleZipFile(file) {
 
     await Promise.all(filePromises);
 
-    // Hide loading overlay
+    // Hide loading overlay with brief delay for smoother completion
     if (window.LoadingManager) {
-      LoadingManager.hide();
+      setTimeout(() => LoadingManager.hide(), 500);
     }
 
     // Show completion toast
@@ -154,7 +171,7 @@ function html_onload() {
     var fileElem = document.createElement("input");
     fileElem.setAttribute("type", "file");
     fileElem.setAttribute("multiple", "multiple");
-    fileElem.onchange = function () {
+    fileElem.onchange = async function () {
       for (var k = 0; k < this.files.length; k++) {
 
         function basename(path) { return path.split('.').reverse()[0]; }
@@ -162,7 +179,7 @@ function html_onload() {
         var fileExtension = ("" + basename(this.files[k].name)).toLowerCase();
         if (fileExtension == "zip") {
           // Handle zip file
-          handleZipFile(this.files[k]);
+          await handleZipFile(this.files[k]);
         }
         else if (fileExtension == "mht") wadorsLoader(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "jpg") loadPicture(URL.createObjectURL(this.files[k]));
@@ -224,7 +241,7 @@ function html_onload() {
       }
     }
     function addFile(item) {
-      item.file(function (file) {
+      item.file(async function (file) {
         var url = URL.createObjectURL(file);
 
         function basename(path) {
@@ -233,7 +250,7 @@ function html_onload() {
         var fileExtension = ("" + basename(file.name)).toLowerCase();
         if (fileExtension == "zip") {
           // Handle zip file
-          handleZipFile(file);
+          await handleZipFile(file);
         }
         else if (fileExtension == "mht") wadorsLoader(url);
         else if (fileExtension == "jpg") loadPicture(url);
