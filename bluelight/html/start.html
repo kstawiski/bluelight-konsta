@@ -58,8 +58,7 @@
   <script src="../scripts/tools/calibration.js" async></script>
 </head>
 
-<body onmousewheel="/*return false;*/">
-  <header class="page-header" id="page-header">
+<body>  <header class="page-header" id="page-header">
     <div class="header-branding">
       <img src="../image/icon/title/bluelight.png" alt="BlueLight" class="header-logo">
       <h1 class="header-title">BlueLight DICOM Viewer</h1>
@@ -326,10 +325,10 @@
   </div>
 
   <!-- Toast Notification Container -->
-  <div class="toast-container" id="toastContainer"></div>
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
   <!-- Drag & Drop Overlay -->
-  <div class="drop-overlay" id="dropOverlay">
+  <div class="drop-overlay" id="dropOverlay" role="dialog" aria-modal="true" aria-label="Drop files here">
     <div class="drop-zone">
       <div class="drop-zone-icon">📁</div>
       <div class="drop-zone-title">Drop your files here</div>
@@ -357,11 +356,11 @@
   <div class="modern-tooltip" id="modernTooltip"></div>
 
   <!-- Keyboard Shortcuts Help Overlay -->
-  <div class="shortcuts-overlay" id="shortcutsOverlay">
+  <div class="shortcuts-overlay" id="shortcutsOverlay" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
     <div class="shortcuts-panel">
       <div class="shortcuts-header">
-        <div class="shortcuts-title">⌨️ Keyboard Shortcuts</div>
-        <button class="shortcuts-close" id="shortcutsClose">✕</button>
+        <div class="shortcuts-title" id="shortcuts-title">⌨️ Keyboard Shortcuts</div>
+        <button class="shortcuts-close" id="shortcutsClose" aria-label="Close shortcuts panel">✕</button>
       </div>
       <div class="shortcuts-content">
         <div class="shortcuts-section">

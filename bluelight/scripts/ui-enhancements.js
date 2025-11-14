@@ -48,16 +48,35 @@ const ToastManager = {
 
     const toastIcon = icon || defaultIcons[type];
 
-    toast.innerHTML = `
-      <div class="toast-icon">${toastIcon}</div>
-      <div class="toast-content">
-        ${title ? `<div class="toast-title">${title}</div>` : ''}
-        <div class="toast-message">${message}</div>
-      </div>
-      <button class="toast-close">✕</button>
-    `;
+    // Build toast DOM structure safely
+    const iconDiv = document.createElement('div');
+    iconDiv.className = 'toast-icon';
+    iconDiv.textContent = toastIcon;
 
-    const closeBtn = toast.querySelector('.toast-close');
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'toast-content';
+
+    if (title) {
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'toast-title';
+      titleDiv.textContent = title;
+      contentDiv.appendChild(titleDiv);
+    }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'toast-message';
+    messageDiv.textContent = message;
+    contentDiv.appendChild(messageDiv);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'toast-close';
+    closeBtn.setAttribute('aria-label', 'Close notification');
+    closeBtn.textContent = '✕';
+
+    toast.appendChild(iconDiv);
+    toast.appendChild(contentDiv);
+    toast.appendChild(closeBtn);
     closeBtn.onclick = () => {
       // Clear the auto-dismiss timeout when manually closed
       if (this.timeouts.has(toast)) {
@@ -190,6 +209,10 @@ const LoadingManager = {
   },
 
   show(title = 'Processing...', message = 'Please wait') {
+    if (!this.overlay || !this.titleEl || !this.messageEl || !this.progressBarEl || !this.statsEl) {
+      console.error('LoadingManager: Cannot show - not properly initialized');
+      return;
+    }
     this.titleEl.textContent = title;
     this.messageEl.textContent = message;
     this.progressBarEl.style.width = '0%';
@@ -266,16 +289,19 @@ const TooltipManager = {
     clearTimeout(this.hideTimeout);
 
     const rect = event.target.getBoundingClientRect();
-    let content = tooltipData.text;
+    
+    // Clear previous tooltip content
+    this.tooltip.textContent = tooltipData.text;
 
     if (tooltipData.shortcut) {
-      content += ` <span class="tooltip-shortcut">${tooltipData.shortcut}</span>`;
+      const shortcutSpan = document.createElement('span');
+      shortcutSpan.className = 'tooltip-shortcut';
+      shortcutSpan.textContent = tooltipData.shortcut;
+      this.tooltip.appendChild(document.createTextNode(' '));
+      this.tooltip.appendChild(shortcutSpan);
     }
 
-    this.tooltip.innerHTML = content;
-
     // Position tooltip above element
-    const tooltipRect = this.tooltip.getBoundingClientRect();
     const left = rect.left + (rect.width / 2);
     const top = rect.top - 10;
 
@@ -331,6 +357,14 @@ const KeyboardShortcuts = {
 
     // Close button
     this.closeBtn.addEventListener('click', () => this.hideHelp());
+    
+    // Keyboard navigation for close button
+    this.closeBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.hideHelp();
+      }
+    });
 
     // Click outside to close
     this.overlayEl.addEventListener('click', (e) => {
@@ -378,16 +412,26 @@ const KeyboardShortcuts = {
   },
 
   setSplitScreen(count) {
-    // Try to find and click the appropriate split screen button
-    const splitBtn = document.getElementById('SplitWindow');
-    if (!splitBtn) return;
-
-    // This would need to be integrated with the actual split screen functionality
-    // For now, we'll just click the split button
-    splitBtn.click();
-
-    // You would need to add logic here to select the specific layout
-    // based on the count parameter
+    // Try to find and click the appropriate split screen layout button
+    // Assume buttons have IDs like 'SplitWindow-1', 'SplitWindow-4', 'SplitWindow-9', 'SplitWindow-16'
+    const validCounts = [1, 4, 9, 16];
+    if (!validCounts.includes(count)) {
+      console.warn(`Split screen layout for count=${count} not supported.`);
+      return;
+    }
+    const layoutBtn = document.getElementById(`SplitWindow-${count}`);
+    if (layoutBtn) {
+      layoutBtn.click();
+    } else {
+      // Fallback: click the main split button if specific layout button not found
+      const splitBtn = document.getElementById('SplitWindow');
+      if (splitBtn) {
+        splitBtn.click();
+        console.warn(`Specific split layout button 'SplitWindow-${count}' not found. Default split button clicked.`);
+      } else {
+        console.warn('Split screen button not found.');
+      }
+    }
   },
 
   toggleCine(e) {
