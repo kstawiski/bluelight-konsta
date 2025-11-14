@@ -1,5 +1,70 @@
 var BorderList_Icon = ["MouseOperation", "WindowRevision", "MeasureRuler", "MouseRotate", "playvideo", "zoom", "b_Scroll", "AngleRuler", "openMeasureImg"];
 
+// Function to handle zip file extraction and DICOM loading
+async function handleZipFile(file) {
+  try {
+    const zip = new JSZip();
+    const zipContents = await zip.loadAsync(file);
+
+    // Counter for tracking all files in zip
+    let totalFiles = 0;
+    zipContents.forEach(() => totalFiles++);
+
+    console.log(`Found ${totalFiles} files in zip archive`);
+
+    // Process each file in the zip
+    const filePromises = [];
+    zipContents.forEach((relativePath, zipEntry) => {
+      // Skip directories and non-DICOM files (allow .dcm and files without extension)
+      if (zipEntry.dir) return;
+
+      const filePromise = zipEntry.async("arraybuffer").then((arrayBuffer) => {
+        // Try to load as DICOM regardless of extension
+        ImageManager.NumOfPreLoadSops += 1;
+
+        try {
+          var Sop = loadDicomDataSet(arrayBuffer);
+          if (Sop) {
+            // Create a blob URL for the file
+            const blob = new Blob([arrayBuffer]);
+            const url = URL.createObjectURL(blob);
+            Sop.Image.url = url;
+            Sop.Image.fileName = relativePath;
+
+            setAllSeriesCount();
+            ImageManager.preLoadSops.push({
+              dataSet: Sop.dataSet,
+              image: Sop.Image,
+              Sop: Sop,
+              SeriesInstanceUID: Sop.Image.SeriesInstanceUID,
+              Index: Sop.Image.NumberOfFrames | Sop.Image.InstanceNumber
+            });
+            console.log(`Loaded DICOM file: ${relativePath}`);
+          }
+        } catch (error) {
+          console.warn(`Could not load file as DICOM: ${relativePath}`, error);
+        }
+
+        ImageManager.NumOfPreLoadSops -= 1;
+        if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
+      }).catch((error) => {
+        console.error(`Error processing file ${relativePath}:`, error);
+        ImageManager.NumOfPreLoadSops -= 1;
+        if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
+      });
+
+      filePromises.push(filePromise);
+    });
+
+    await Promise.all(filePromises);
+    console.log('Zip file processing complete');
+
+  } catch (error) {
+    console.error('Error processing zip file:', error);
+    alert('Error processing zip file: ' + error.message);
+  }
+}
+
 function html_onload() {
   document.body.style.overscrollBehavior = "none";
 
@@ -14,7 +79,11 @@ function html_onload() {
         function basename(path) { return path.split('.').reverse()[0]; }
 
         var fileExtension = ("" + basename(this.files[k].name)).toLowerCase();
-        if (fileExtension == "mht") wadorsLoader(URL.createObjectURL(this.files[k]));
+        if (fileExtension == "zip") {
+          // Handle zip file
+          handleZipFile(this.files[k]);
+        }
+        else if (fileExtension == "mht") wadorsLoader(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "jpg") loadPicture(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "jpeg") loadPicture(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "png") loadPicture(URL.createObjectURL(this.files[k]));
@@ -81,7 +150,11 @@ function html_onload() {
           return path.split('.').reverse()[0];
         }
         var fileExtension = ("" + basename(file.name)).toLowerCase();
-        if (fileExtension == "mht") wadorsLoader(url);
+        if (fileExtension == "zip") {
+          // Handle zip file
+          handleZipFile(file);
+        }
+        else if (fileExtension == "mht") wadorsLoader(url);
         else if (fileExtension == "jpg") loadPicture(url);
         else if (fileExtension == "jpeg") loadPicture(url);
         else if (fileExtension == "png") loadPicture(url);

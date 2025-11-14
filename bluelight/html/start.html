@@ -18,6 +18,7 @@
   <script src="../scripts/external/cornerstone/dicomParser.js"></script>
   <script src="../scripts/external/cornerstone/dataDictionary.js"></script>
   <script src="../scripts/external/dicom-character-set/dicom-character-set.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <!--<script src="../scripts/external/cornerstone/decode/decodeImageFrame2.js"></script>-->
   <script type="module">
@@ -57,8 +58,12 @@
   <script src="../scripts/tools/calibration.js" async></script>
 </head>
 
-<body style="background-color:#000000;" onmousewheel="/*return false;*/">
+<body onmousewheel="/*return false;*/">
   <header class="page-header" id="page-header">
+    <div style="display: flex; align-items: center; margin-right: 20px;">
+      <img src="../image/icon/title/bluelight.png" alt="BlueLight" style="width: 32px; height: 32px; margin-right: 10px;">
+      <h1 style="margin: 0; font-size: 18px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.5px;">BlueLight DICOM Viewer</h1>
+    </div>
     <span id="icon-list">
       <span id="openFile_span"><img class="img pdf ecg sr" type="file" alt="Open File" altzhtw="開啟檔案" id="openFile"
           src="../image/icon/lite/openfile.png" width="50" height="50"></span>
