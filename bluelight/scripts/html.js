@@ -38,9 +38,10 @@ async function handleZipFile(file) {
         return;
       }
 
+      ImageManager.NumOfPreLoadSops += 1;
+
       const filePromise = zipEntry.async("arraybuffer").then((arrayBuffer) => {
         // Try to load as DICOM regardless of extension
-        ImageManager.NumOfPreLoadSops += 1;
 
         try {
           var Sop = loadDicomDataSet(arrayBuffer);
@@ -70,22 +71,22 @@ async function handleZipFile(file) {
           console.warn(`✗ Could not load file as DICOM: ${relativePath}`);
         }
 
-        // Update progress
-        processedCount++;
-        const progress = (processedCount / totalFiles) * 100;
-        if (window.LoadingManager) {
-          LoadingManager.updateProgress(
-            progress,
-            `Loaded ${loadedCount} of ${totalFiles} files${failedCount > 0 ? ` (${failedCount} skipped)` : ''}`
-          );
-        }
-
-        ImageManager.NumOfPreLoadSops -= 1;
-        if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
       }).catch((error) => {
         failedCount++;
-        processedCount++;
         console.error(`Error processing file ${relativePath}:`, error);
+      }).finally(() => {
+        processedCount++;
+        if (window.LoadingManager) {
+          if (totalFiles > 0) {
+            const progress = (processedCount / totalFiles) * 100;
+            LoadingManager.updateProgress(
+              progress,
+              `Loaded ${loadedCount} of ${totalFiles} files${failedCount > 0 ? ` (${failedCount} skipped)` : ''}`
+            );
+          } else {
+            LoadingManager.updateProgress(0, 'No files detected in archive');
+          }
+        }
 
         ImageManager.NumOfPreLoadSops -= 1;
         if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
