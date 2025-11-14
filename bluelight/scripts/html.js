@@ -15,8 +15,12 @@ async function handleZipFile(file) {
     const zip = new JSZip();
     const zipContents = await zip.loadAsync(file);
 
-    // Counter for tracking all files in zip
-    zipContents.forEach(() => totalFiles++);
+    // Counter for tracking all files in zip (excluding directories)
+    zipContents.forEach((relativePath, zipEntry) => {
+      if (!zipEntry.dir) {
+        totalFiles++;
+      }
+    });
 
     console.log(`Found ${totalFiles} files in zip archive`);
 
@@ -31,7 +35,6 @@ async function handleZipFile(file) {
     zipContents.forEach((relativePath, zipEntry) => {
       // Skip directories
       if (zipEntry.dir) {
-        processedCount++;
         return;
       }
 
@@ -54,7 +57,7 @@ async function handleZipFile(file) {
               image: Sop.Image,
               Sop: Sop,
               SeriesInstanceUID: Sop.Image.SeriesInstanceUID,
-              Index: Sop.Image.NumberOfFrames | Sop.Image.InstanceNumber
+              Index: Sop.Image.NumberOfFrames || Sop.Image.InstanceNumber
             });
 
             loadedCount++;

@@ -11,12 +11,23 @@
 const ToastManager = {
   container: null,
   toasts: [],
+  timeouts: new Map(), // Store timeout IDs for cleanup
 
   init() {
     this.container = document.getElementById('toastContainer');
+    if (!this.container) {
+      console.warn('ToastManager: toastContainer element not found');
+      return false;
+    }
+    return true;
   },
 
   show(options) {
+    if (!this.container) {
+      console.warn('ToastManager not initialized');
+      return null;
+    }
+
     const {
       title = '',
       message = '',
@@ -47,19 +58,33 @@ const ToastManager = {
     `;
 
     const closeBtn = toast.querySelector('.toast-close');
-    closeBtn.onclick = () => this.remove(toast);
+    closeBtn.onclick = () => {
+      // Clear the auto-dismiss timeout when manually closed
+      if (this.timeouts.has(toast)) {
+        clearTimeout(this.timeouts.get(toast));
+        this.timeouts.delete(toast);
+      }
+      this.remove(toast);
+    };
 
     this.container.appendChild(toast);
     this.toasts.push(toast);
 
     if (duration > 0) {
-      setTimeout(() => this.remove(toast), duration);
+      const timeoutId = setTimeout(() => this.remove(toast), duration);
+      this.timeouts.set(toast, timeoutId);
     }
 
     return toast;
   },
 
   remove(toast) {
+    // Clear timeout if exists
+    if (this.timeouts.has(toast)) {
+      clearTimeout(this.timeouts.get(toast));
+      this.timeouts.delete(toast);
+    }
+
     toast.classList.add('removing');
     setTimeout(() => {
       if (toast.parentNode) {
@@ -96,12 +121,17 @@ const DropOverlayManager = {
 
   init() {
     this.overlay = document.getElementById('dropOverlay');
+    if (!this.overlay) {
+      console.warn('DropOverlayManager: dropOverlay element not found');
+      return false;
+    }
 
     // Prevent default drag behaviors
     document.addEventListener('dragenter', (e) => this.handleDragEnter(e));
     document.addEventListener('dragleave', (e) => this.handleDragLeave(e));
     document.addEventListener('dragover', (e) => e.preventDefault());
     document.addEventListener('drop', (e) => this.handleDrop(e));
+    return true;
   },
 
   handleDragEnter(e) {
@@ -151,6 +181,12 @@ const LoadingManager = {
     this.messageEl = document.getElementById('loadingMessage');
     this.progressBarEl = document.getElementById('loadingProgressBar');
     this.statsEl = document.getElementById('loadingStats');
+
+    if (!this.overlay || !this.titleEl || !this.messageEl || !this.progressBarEl || !this.statsEl) {
+      console.warn('LoadingManager: One or more required elements not found');
+      return false;
+    }
+    return true;
   },
 
   show(title = 'Processing...', message = 'Please wait') {
@@ -207,6 +243,10 @@ const TooltipManager = {
 
   init() {
     this.tooltip = document.getElementById('modernTooltip');
+    if (!this.tooltip) {
+      console.warn('TooltipManager: modernTooltip element not found');
+      return false;
+    }
 
     // Add hover listeners to all icons
     Object.keys(this.tooltips).forEach(id => {
@@ -216,6 +256,7 @@ const TooltipManager = {
         element.addEventListener('mouseleave', () => this.hide());
       }
     });
+    return true;
   },
 
   show(event, elementId) {
@@ -265,6 +306,11 @@ const KeyboardShortcuts = {
     this.overlayEl = document.getElementById('shortcutsOverlay');
     this.closeBtn = document.getElementById('shortcutsClose');
 
+    if (!this.overlayEl || !this.closeBtn) {
+      console.warn('KeyboardShortcuts: Required elements not found');
+      return false;
+    }
+
     // Define shortcuts
     this.shortcuts = {
       'o': () => this.openFile(),
@@ -292,6 +338,8 @@ const KeyboardShortcuts = {
         this.hideHelp();
       }
     });
+
+    return true;
   },
 
   handleKeydown(e) {

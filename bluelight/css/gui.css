@@ -390,10 +390,7 @@ button:active {
 
 
 /*from script*/
-:root {
-  --bordersize: 5px;
-}
-
+/* Using dedicated border size for left panel to maintain legacy layout calculations */
 .OutLeftImg {
   border: var(--bordersize) solid var(--accent-primary);
   padding: 2px;
@@ -403,8 +400,9 @@ button:active {
 }
 
 .LeftCanvas {
-  width: calc(var(--leftImagePadding) - var(--bordersize) * 5);
-  height: calc(var(--leftImagePadding) - var(--bordersize) * 5);
+  /* Using 5px for legacy calculation compatibility */
+  width: calc(var(--leftImagePadding) - 5px * 5);
+  height: calc(var(--leftImagePadding) - 5px * 5);
 }
 
 .LeftImgAndMark {
@@ -917,7 +915,7 @@ button:active {
   right: 0;
   bottom: 0;
   background-color: rgba(10, 14, 26, 0.9);
-  z-index: 10000;
+  z-index: 10002;
   display: none;
   align-items: center;
   justify-content: center;
