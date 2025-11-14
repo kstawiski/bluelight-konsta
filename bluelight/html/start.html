@@ -18,7 +18,7 @@
   <script src="../scripts/external/cornerstone/dicomParser.js"></script>
   <script src="../scripts/external/cornerstone/dataDictionary.js"></script>
   <script src="../scripts/external/dicom-character-set/dicom-character-set.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="../scripts/external/jszip/jszip.min.js"></script>
 
   <!--<script src="../scripts/external/cornerstone/decode/decodeImageFrame2.js"></script>-->
   <script type="module">
@@ -60,12 +60,17 @@
 
 <body onmousewheel="/*return false;*/">
   <header class="page-header" id="page-header">
-    <div style="display: flex; align-items: center; margin-right: 20px;">
-      <img src="../image/icon/title/bluelight.png" alt="BlueLight" style="width: 32px; height: 32px; margin-right: 10px;">
-      <h1 style="margin: 0; font-size: 18px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.5px;">BlueLight DICOM Viewer</h1>
+    <div class="header-branding">
+      <img src="../image/icon/title/bluelight.png" alt="BlueLight" class="header-logo">
+      <h1 class="header-title">BlueLight DICOM Viewer</h1>
     </div>
-    <div style="margin-right: 12px; padding: 6px 12px; background-color: var(--secondary-bg); border-radius: 6px; font-size: 12px; color: var(--text-secondary); border: 1px solid var(--border-color);">
-      📁 Supports: <span style="color: var(--accent-primary); font-weight: 500;">DICOM</span>, <span style="color: var(--accent-primary); font-weight: 500;">ZIP</span>, <span style="color: var(--accent-primary); font-weight: 500;">Images</span> | Press <kbd style="background: var(--tertiary-bg); padding: 2px 6px; border-radius: 3px; font-size: 11px; border: 1px solid var(--border-color); color: var(--accent-primary);">?</kbd> for shortcuts
+    <div class="header-supports">
+      📁 Supports:
+      <span class="support-highlight">DICOM</span>,
+      <span class="support-highlight">ZIP</span>,
+      <span class="support-highlight">Images</span>
+      |
+      Press <kbd>?</kbd> for shortcuts
     </div>
     <span id="icon-list">
       <span id="openFile_span"><img class="img pdf ecg sr" type="file" alt="Open File" altzhtw="開啟檔案" id="openFile"
@@ -295,8 +300,7 @@
       <div id="LeftPicture" style="overflow-y: auto;display: flex;flex-direction: column;position: absolute;z-index: 9;"
         width="100">
       </div>
-      <div id="dicomStatusIndicator"
-        style="position: fixed; left: 0px; bottom: 10px; min-width: 143px; max-width: 143px; height: auto; min-height: 30px; background-color: rgba(0,0,0,0.85); color: white; padding: 8px; text-align: left; font-size: 14px; z-index: 1000; display: none; border-radius: 4px; box-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events: none;">
+      <div id="dicomStatusIndicator">
         Loading images...
       </div>
       <div id="pages">
