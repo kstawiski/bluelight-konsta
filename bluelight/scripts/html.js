@@ -77,11 +77,15 @@ async function handleZipFile(file) {
       }).finally(() => {
         processedCount++;
         if (window.LoadingManager) {
-          const progress = (processedCount / totalFiles) * 100;
-          LoadingManager.updateProgress(
-            progress,
-            `Loaded ${loadedCount} of ${totalFiles} files${failedCount > 0 ? ` (${failedCount} skipped)` : ''}`
-          );
+          if (totalFiles > 0) {
+            const progress = (processedCount / totalFiles) * 100;
+            LoadingManager.updateProgress(
+              progress,
+              `Loaded ${loadedCount} of ${totalFiles} files${failedCount > 0 ? ` (${failedCount} skipped)` : ''}`
+            );
+          } else {
+            LoadingManager.updateProgress(0, 'No files detected in archive');
+          }
         }
 
         ImageManager.NumOfPreLoadSops -= 1;
