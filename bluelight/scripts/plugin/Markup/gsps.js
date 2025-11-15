@@ -130,6 +130,11 @@ getByid("writeGSPS").onclick = function () {
     getByid("saveGSPS").style.display = "";
     getByid("drawGSPS").style.display = "";
 
+    // Activate GSPS mode in Contour Editing Manager
+    if (window.ContourEditingManager) {
+        ContourEditingManager.setMode('GSPS');
+    }
+
     getByid("exitGSPS").onclick = function () {
         openLeftImgClick = true;
         img2darkByClass("GSPS", true);
@@ -142,6 +147,11 @@ getByid("writeGSPS").onclick = function () {
         SetTable();
         getByid('MouseOperation').click();
         displayMark();
+
+        // Return to VIEW mode
+        if (window.ContourEditingManager) {
+            ContourEditingManager.setMode('VIEW');
+        }
     }
 
     getByid("eraseGSPS").onclick = function () {

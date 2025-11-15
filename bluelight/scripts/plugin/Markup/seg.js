@@ -449,6 +449,11 @@ getByid("writeSEG").onclick = function () {
     getByid("saveSEG").style.display = "";
     getByid("drawSEG").style.display = "";
 
+    // Activate SEG mode in Contour Editing Manager
+    if (window.ContourEditingManager) {
+        ContourEditingManager.setMode('SEG');
+    }
+
     getByid("exitSEG").onclick = function () {
         openLeftImgClick = true;
         img2darkByClass("SEG", true);
@@ -464,6 +469,11 @@ getByid("writeSEG").onclick = function () {
         SetTable();
         displayMark();
         getByid('MouseOperation').click();
+
+        // Return to VIEW mode
+        if (window.ContourEditingManager) {
+            ContourEditingManager.setMode('VIEW');
+        }
     }
 
     getByid("saveSEG").onclick = function () {

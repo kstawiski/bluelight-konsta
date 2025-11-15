@@ -1,0 +1,380 @@
+/**
+ * Contour Editing Mode - Visual Feedback Styles
+ * Professional TPS-like UI for RTSS/SEG/GSPS/XML editing
+ */
+
+/* ============================================
+   VIEWPORT BORDER INDICATORS
+   ============================================ */
+
+.viewport-container {
+  position: relative;
+  border: 4px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+/* Mode-specific border colors */
+.viewport-container.mode-view {
+  border-color: #00FF00;
+}
+
+.viewport-container.mode-rtss {
+  border-color: #FF8C00;
+  box-shadow: inset 0 0 20px rgba(255, 140, 0, 0.2);
+}
+
+.viewport-container.mode-seg {
+  border-color: #4169E1;
+  box-shadow: inset 0 0 20px rgba(65, 105, 225, 0.2);
+}
+
+.viewport-container.mode-gsps {
+  border-color: #9370DB;
+  box-shadow: inset 0 0 20px rgba(147, 112, 219, 0.2);
+}
+
+.viewport-container.mode-xml {
+  border-color: #FFD700;
+  box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+/* ============================================
+   MODE WATERMARK OVERLAY
+   ============================================ */
+
+.mode-watermark {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  padding: 12px 20px;
+  border-radius: 8px;
+  border-left: 4px solid var(--mode-color, #00FF00);
+  color: white;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  z-index: 1000;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 220px;
+  animation: watermarkFadeIn 0.3s ease;
+}
+
+@keyframes watermarkFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mode-watermark .mode-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.mode-watermark .mode-info {
+  flex: 1;
+}
+
+.mode-watermark .mode-name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--mode-color, #00FF00);
+  margin-bottom: 4px;
+  text-shadow: 0 0 10px rgba(var(--mode-color-rgb, 0, 255, 0), 0.5);
+}
+
+.mode-watermark .roi-name {
+  font-size: 12px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* ============================================
+   ACTIVE MODE BUTTON HIGHLIGHTING
+   ============================================ */
+
+.mode-button-active {
+  position: relative;
+  background: rgba(66, 165, 245, 0.15) !important;
+  border: 2px solid var(--mode-color, #42A5F5) !important;
+  box-shadow: 0 0 15px rgba(66, 165, 245, 0.4),
+              inset 0 0 10px rgba(66, 165, 245, 0.2) !important;
+  animation: modeButtonPulse 2s ease-in-out infinite;
+}
+
+@keyframes modeButtonPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(66, 165, 245, 0.4),
+                inset 0 0 10px rgba(66, 165, 245, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(66, 165, 245, 0.6),
+                inset 0 0 15px rgba(66, 165, 245, 0.3);
+  }
+}
+
+/* Active state for innerimg class (used by markup tools) */
+.innerimg.mode-button-active {
+  filter: brightness(1.3) drop-shadow(0 0 10px currentColor);
+}
+
+/* ============================================
+   CURSOR STYLES
+   ============================================ */
+
+/* Brush cursor - crosshair with subtle glow */
+.viewport-container.mode-rtss,
+.viewport-container.mode-seg,
+.viewport-container.mode-gsps,
+.viewport-container.mode-xml {
+  cursor: crosshair;
+}
+
+/* View mode - default cursor */
+.viewport-container.mode-view {
+  cursor: default;
+}
+
+/* Eraser cursor - crosshair (will be enhanced with canvas in Phase 4) */
+.viewport-editing-eraser {
+  cursor: crosshair;
+}
+
+/* ============================================
+   ROI LIST ACTIVE HIGHLIGHTING
+   ============================================ */
+
+.roi-item {
+  padding: 8px 12px;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.roi-item.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-left-color: var(--roi-color, #00FF00);
+  font-weight: 700;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.roi-item:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.roi-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.roi-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roi-visibility {
+  opacity: 0.6;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.roi-visibility:hover {
+  opacity: 1;
+}
+
+/* ============================================
+   TOOL STATE INDICATORS
+   ============================================ */
+
+/* Hide tools that aren't relevant to current mode */
+.tool-hidden {
+  display: none !important;
+}
+
+/* Highlight active drawing tool */
+.tool-active {
+  background: rgba(66, 165, 245, 0.2);
+  border-color: #42A5F5 !important;
+  box-shadow: 0 0 10px rgba(66, 165, 245, 0.3);
+}
+
+/* ============================================
+   EDITING MODE TOOLBAR ENHANCEMENTS
+   ============================================ */
+
+/* Make editing tools more prominent when active */
+.img.RTSS,
+.img.SEG,
+.img.GSPS,
+.img.XML {
+  transition: all 0.2s ease;
+}
+
+.img.RTSS:hover,
+.img.SEG:hover,
+.img.GSPS:hover,
+.img.XML:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+/* ============================================
+   SAFETY INDICATORS
+   ============================================ */
+
+/* Red outline for destructive actions */
+.tool-destructive {
+  border: 2px solid rgba(255, 0, 0, 0.5) !important;
+}
+
+.tool-destructive:hover {
+  border-color: rgba(255, 0, 0, 0.8) !important;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+}
+
+/* ============================================
+   KEYBOARD SHORTCUT HINTS
+   ============================================ */
+
+.shortcut-hint {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #FFD700;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 10;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible indicators */
+.viewport-container:focus-visible {
+  outline: 3px solid #42A5F5;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   ANIMATION CLASSES
+   ============================================ */
+
+/* Smooth mode transitions */
+.transition-mode {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Fade in/out */
+.fade-in {
+  animation: fadeIn 0.2s ease;
+}
+
+.fade-out {
+  animation: fadeOut 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .mode-watermark {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-width: 180px;
+  }
+
+  .mode-watermark .mode-name {
+    font-size: 12px;
+  }
+
+  .mode-watermark .roi-name {
+    font-size: 10px;
+  }
+
+  .viewport-container {
+    border-width: 3px;
+  }
+}
+
+/* ============================================
+   DARK THEME OPTIMIZATIONS
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .mode-watermark {
+    background: rgba(20, 20, 20, 0.95);
+    border-color: var(--mode-color, #00FF00);
+  }
+
+  .roi-item.active {
+    background: rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .mode-watermark {
+    display: none !important;
+  }
+
+  .viewport-container {
+    border: 1px solid #000 !important;
+  }
+}

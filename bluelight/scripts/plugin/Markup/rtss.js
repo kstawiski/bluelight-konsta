@@ -128,6 +128,12 @@ getByid("writeRTSS").onclick = function () {
     getByid("eraseRTSS").style.display = "";
     getByid("saveRTSS").style.display = "";
     getByid("drawRTSS").style.display = "";
+
+    // Activate RTSS mode in Contour Editing Manager
+    if (window.ContourEditingManager) {
+        ContourEditingManager.setMode('RTSS');
+    }
+
     getByid("exitRTSS").onclick = function () {
         openLeftImgClick = true;
         img2darkByClass("RTSS", true);
@@ -140,6 +146,11 @@ getByid("writeRTSS").onclick = function () {
         displayMark();
         SetTable();
         getByid('MouseOperation').click();
+
+        // Return to VIEW mode
+        if (window.ContourEditingManager) {
+            ContourEditingManager.setMode('VIEW');
+        }
     }
     getByid("eraseRTSS").onclick = function () {
         eraseRTSS();

@@ -74,6 +74,11 @@ getByid("writeXML").onclick = function () {
   SetTable();
   displayMark();
 
+  // Activate XML mode in Contour Editing Manager
+  if (window.ContourEditingManager) {
+    ContourEditingManager.setMode('XML');
+  }
+
   getByid("exitXML").onclick = function () {
     openLeftImgClick = true;
     img2darkByClass("XML", true);
@@ -87,6 +92,11 @@ getByid("writeXML").onclick = function () {
     xml_now_choose = null;
     getByid('MouseOperation').click();
     displayMark();
+
+    // Return to VIEW mode
+    if (window.ContourEditingManager) {
+      ContourEditingManager.setMode('VIEW');
+    }
   }
 
 
