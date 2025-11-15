@@ -4,7 +4,7 @@ function loadMarkupPlugin() {
     var span = document.createElement("SPAN");
     span.id = "MarkupImgParent";
     span.innerHTML = `
-     <img class="img" loading="lazy" altzhtw="3D" alt="3D" id="MarkupDrawerImg" src="../image/icon/lite/markup.png"
+     <img class="img" loading="lazy" altzhtw="開啟標註與分割工具" alt="Open annotation and segmentation tools (RTSS/SEG/GSPS/XML)" id="MarkupDrawerImg" src="../image/icon/lite/markup.png"
           width="50" height="50">
     <div id="MarkupDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
     width: 500; display: none;background-color: black;">`;
@@ -25,15 +25,15 @@ function loadWriteRTSS() {
     loadMarkupPlugin();
     var span = document.createElement("SPAN")
     span.innerHTML =
-        ` <img class="img RTSS" alt="drawRTSS" id="drawRTSS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >  
-          <img class="img RTSS" alt="eraseRTSS" id="eraseRTSS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
-          <img class="img RTSS" alt="exitRTSS" id="exitRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
-          <img class="img RTSS" alt="saveRTSS" id="saveRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
+        ` <img class="img RTSS" alt="Draw RT Structure Set contours" id="drawRTSS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >
+          <img class="img RTSS" alt="Erase RTSS contour segments" id="eraseRTSS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
+          <img class="img RTSS" alt="Exit RTSS editing mode" id="exitRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
+          <img class="img RTSS" alt="Export as DICOM RT Structure Set" id="saveRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
     addIconSpan(span);
 
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<img class="innerimg RTSS" alt="writeRTSS" id="writeRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/rtssdraw_OFF.png" width="50" height="50">`;
+        `<img class="innerimg RTSS" alt="Create RT Structure Set (RTSS) contours" id="writeRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/rtssdraw_OFF.png" width="50" height="50">`;
     if (getByid("MarkupDIv").childNodes.length > 0) getByid("MarkupDIv").appendChild(document.createElement("BR"));
     getByid("MarkupDIv").appendChild(span);
 

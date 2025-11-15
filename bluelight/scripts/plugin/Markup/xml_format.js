@@ -4,7 +4,7 @@ function loadMarkupPlugin() {
   var span = document.createElement("SPAN");
   span.id = "MarkupImgParent";
   span.innerHTML = `
-   <img class="img" loading="lazy" altzhtw="3D" alt="3D" id="MarkupDrawerImg" src="../image/icon/lite/markup.png"
+   <img class="img" loading="lazy" altzhtw="開啟標註與分割工具" alt="Open annotation and segmentation tools (RTSS/SEG/GSPS/XML)" id="MarkupDrawerImg" src="../image/icon/lite/markup.png"
         width="50" height="50">
   <div id="MarkupDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
   width: 500; display: none;background-color: black;">`;
@@ -25,15 +25,15 @@ function loadxml_format() {
   loadMarkupPlugin();
   var span = document.createElement("SPAN")
   span.innerHTML =
-    `<img class="img XML" alt="drawXML" id="drawXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >  
-    <img class="img XML" alt="eraseXML" id="eraseXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >  
-    <img class="img XML" alt="exitXML" id="exitXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
-    <img class="img XML" alt="saveXML" id="saveXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
+    `<img class="img XML" alt="Draw XML-based custom annotations" id="drawXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >
+    <img class="img XML" alt="Erase XML annotation graphics" id="eraseXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
+    <img class="img XML" alt="Exit XML annotation mode" id="exitXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
+    <img class="img XML" alt="Export annotations as XML format" id="saveXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
   addIconSpan(span);
 
   var span = document.createElement("SPAN")
   span.innerHTML =
-    `<img class="innerimg XML" alt="writeXML" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/xml_off.png" width="50" height="50">`
+    `<img class="innerimg XML" alt="Create XML-based custom annotations" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/xml_off.png" width="50" height="50">`
   if (getByid("MarkupDIv").childNodes.length > 0) getByid("MarkupDIv").appendChild(document.createElement("BR"));
   getByid("MarkupDIv").appendChild(span);
 

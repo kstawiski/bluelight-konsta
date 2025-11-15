@@ -8,7 +8,7 @@ function loadMarkupPlugin() {
     var span = document.createElement("SPAN");
     span.id = "MarkupImgParent";
     span.innerHTML = `
-     <img class="img" loading="lazy" altzhtw="3D" alt="3D" id="MarkupDrawerImg" src="../image/icon/lite/markup.png"
+     <img class="img" loading="lazy" altzhtw="開啟標註與分割工具" alt="Open annotation and segmentation tools (RTSS/SEG/GSPS/XML)" id="MarkupDrawerImg" src="../image/icon/lite/markup.png"
           width="50" height="50">
     <div id="MarkupDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
     width: 500; display: none;background-color: black;">`;
@@ -30,19 +30,19 @@ function loadWriteSEG() {
     var span = document.createElement("SPAN")
     span.innerHTML =
         `
-        <img class="img SEG" alt="drawSEG" id="drawSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >  
-        <img class="img SEG" alt="eraseSEG" id="eraseSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
-        <img class="img SEG" alt="fillSEG" id="fillSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Oil.png" width="50" height="50" style="display:none;" >
-        <img class="img SEG" alt="UndoSEG" id="UndoSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Undo.png" width="50" height="50" style="display:none;" >
-        <img class="img SEG" alt="RedoSEG" id="RedoSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Redo.png" width="50" height="50" style="display:none;" >
-        <img class="img SEG" alt="exitSEG" id="exitSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
-        <img class="img SEG" alt="saveSEG" id="saveSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
+        <img class="img SEG" alt="Draw DICOM-SEG segmentation with brush" id="drawSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="Erase segmentation pixels with eraser" id="eraseSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="Fill enclosed region with segmentation" id="fillSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Oil.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="Undo last segmentation action" id="UndoSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Undo.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="Redo segmentation action" id="RedoSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Redo.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="Exit DICOM-SEG editing mode" id="exitSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="Export as DICOM Segmentation object" id="saveSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
 
     addIconSpan(span);
 
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<img class="innerimg SEG" alt="writeSEG" id="writeSEG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/seg_off.png" width="50" height="50">`;
+        `<img class="innerimg SEG" alt="Create DICOM Segmentation (SEG)" id="writeSEG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/seg_off.png" width="50" height="50">`;
     if (getByid("MarkupDIv").childNodes.length > 0) getByid("MarkupDIv").appendChild(document.createElement("BR"));
     getByid("MarkupDIv").appendChild(span);
 
