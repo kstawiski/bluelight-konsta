@@ -378,3 +378,182 @@
     border: 1px solid #000 !important;
   }
 }
+
+/* ============================================
+   TOOL VISIBILITY & CONTEXT-AWARE UI
+   ============================================ */
+
+/* Smooth transitions for tool visibility */
+#icon-list span {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Compact editing mode layout */
+#icon-list.editing-mode {
+  gap: 8px;
+}
+
+#icon-list.editing-mode span {
+  margin: 0 4px;
+}
+
+/* Hide tools smoothly */
+.tool-hidden {
+  opacity: 0 !important;
+  transform: scale(0.9) !important;
+  pointer-events: none !important;
+  display: none !important;
+}
+
+/* Show tools smoothly */
+.tool-visible {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+/* Editing mode header simplification */
+.editing-mode-active #page-header {
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(50, 50, 50, 0.95) 100%);
+}
+
+/* Focus on viewport during editing */
+.editing-mode-active #DicomPage {
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Highlight essential tools in editing mode */
+#icon-list.editing-mode .img.RTSS,
+#icon-list.editing-mode .img.SEG,
+#icon-list.editing-mode .img.GSPS,
+#icon-list.editing-mode .img.XML {
+  filter: brightness(1.1);
+}
+
+/* De-emphasize non-editing tools */
+#icon-list.editing-mode span:not([style*="display: none"]) {
+  position: relative;
+}
+
+/* Toolbar reorganization in editing mode */
+#icon-list.editing-mode {
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 8px 12px;
+}
+
+/* Essential tools get priority spacing */
+#icon-list.editing-mode #MouseOperation_span,
+#icon-list.editing-mode #b_Scroll_span,
+#icon-list.editing-mode #reset_span,
+#icon-list.editing-mode #MarkButton_span {
+  margin-right: 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding-right: 16px;
+}
+
+/* Editing-specific tools grouped together */
+#icon-list.editing-mode .RTSS,
+#icon-list.editing-mode .SEG,
+#icon-list.editing-mode .GSPS,
+#icon-list.editing-mode .XML {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+/* ============================================
+   EDITING MODE NOTIFICATION BANNER
+   ============================================ */
+
+.editing-mode-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, var(--mode-color, #4169E1) 0%, rgba(var(--mode-color-rgb, 65, 105, 225), 0.8) 100%);
+  color: white;
+  padding: 4px 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  z-index: 10002;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: bannerSlideIn 0.3s ease;
+  display: none;
+  letter-spacing: 0.5px;
+}
+
+.editing-mode-banner.active {
+  display: block;
+}
+
+@keyframes bannerSlideIn {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.editing-mode-banner .banner-icon {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.editing-mode-banner .banner-text {
+  display: inline-block;
+}
+
+/* ============================================
+   TOOL GROUPING VISUAL SEPARATORS
+   ============================================ */
+
+/* Add visual separators between tool groups */
+#icon-list.editing-mode::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* ============================================
+   RESPONSIVE TOOL VISIBILITY
+   ============================================ */
+
+@media (max-width: 1024px) {
+  /* On smaller screens, make editing mode even more compact */
+  #icon-list.editing-mode {
+    padding: 4px 8px;
+  }
+
+  #icon-list.editing-mode span {
+    margin: 0 2px;
+  }
+
+  #icon-list.editing-mode img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* On mobile, vertical toolbar in editing mode */
+  #icon-list.editing-mode {
+    flex-direction: column;
+    align-items: flex-start;
+    overflow-y: auto;
+    max-height: 50vh;
+  }
+
+  .mode-watermark {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+}
+
